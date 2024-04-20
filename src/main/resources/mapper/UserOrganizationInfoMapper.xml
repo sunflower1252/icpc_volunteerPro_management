@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sunflower.icpc_volunteer_management.mapper.UserOrganizationInfoMapper">
+
+    <resultMap id="BaseResultMap" type="com.sunflower.icpc_volunteer_management.userOrganizationInfo.UserOrganizationInfo">
+            <id property="userOrganizationId" column="user_organization_id" jdbcType="INTEGER"/>
+            <result property="userId" column="user_id" jdbcType="INTEGER"/>
+            <result property="organizationId" column="organization_id" jdbcType="INTEGER"/>
+            <result property="memberTitle" column="member_title" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        user_organization_id,user_id,organization_id,
+        member_title
+    </sql>
+</mapper>
