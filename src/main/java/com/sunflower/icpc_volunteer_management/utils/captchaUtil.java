@@ -1,23 +1,11 @@
 package com.sunflower.icpc_volunteer_management.utils;
 
-import cn.hutool.extra.mail.Mail;
-import cn.hutool.extra.mail.MailUtil;
-import com.sunflower.icpc_volunteer_management.commom.Result;
-import jakarta.validation.constraints.Email;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.Mapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author yg

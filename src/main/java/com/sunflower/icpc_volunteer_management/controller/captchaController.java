@@ -26,7 +26,11 @@ public class captchaController {
     @Autowired
     StringRedisTemplate stringRedisTemplate;
 
-    //注册
+    /**
+     * 注册
+     * @param email 邮箱
+     * @return {@link Result}
+     */
     @GetMapping("/sendMessage")
     public Result sendMessage(@RequestParam @Email String email){
         try{

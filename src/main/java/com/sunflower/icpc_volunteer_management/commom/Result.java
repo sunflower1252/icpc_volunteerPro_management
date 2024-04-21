@@ -14,14 +14,19 @@ import java.util.Map;
  */
 @Data
 public class Result implements Serializable {
+    /**
+     * code 200 500 401 404\
+     * msg 信息
+     * data 数据
+     */
 
-    private Integer code; //编码：1成功，0和其它数字为失败
+    private Integer code;
 
-    private String msg; //错误信息
+    private String msg;
 
-    private Object data; //数据
+    private Object data;
 
-    private Map map = new HashMap(); //动态数据
+    private Map map = new HashMap();
 
     public static Result success(Object object) {
         Result r = new Result();
