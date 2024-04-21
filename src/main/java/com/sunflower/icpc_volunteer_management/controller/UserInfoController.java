@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 /**
-* @author yg
-*/
+ * @author yg
+ */
 @RestController
 @RequestMapping("/UserInfo")
 public class UserInfoController {
@@ -17,7 +17,6 @@ public class UserInfoController {
     UserInfoService userInfoService;
 
     /**
-     * 注册
      * @param email 邮箱
      * @param password 密码
      * @param captcha 验证码
@@ -30,7 +29,7 @@ public class UserInfoController {
 
     /**
      * 登录
-     * @param userInfo
+     * @param userInfo 用户信息
      * @return {@link Result}
      */
     @PostMapping("/userLogin")
@@ -38,4 +37,34 @@ public class UserInfoController {
         return Result.success(userInfoService.userLogin(userInfo));
     }
 
+    /**
+     * 上传个人照片
+     * @param profilePicture 头像地址
+     * @return {@link Result}
+     */
+    @PostMapping("/uploadProfilePicture")
+    public Result uploadProfilePicture(String profilePicture){
+        return Result.success(userInfoService.uploadProfilePicture(profilePicture));
+    }
+
+
+    /**
+     * 显示个人资料
+     * @return {@link Result}
+     */
+    @PostMapping("/editProfile")
+    public Result editProfile(){
+        return Result.success(userInfoService.editProfile());
+    }
+
+
+    /**
+     * 更新个人信息
+     * @param userInfo 已更改的对象
+     * @return {@link Result}
+     */
+    @PostMapping("/changeProfile")
+    public Result changeProfile(@RequestBody UserInfo userInfo){
+        return Result.success(userInfoService.changeProfile(userInfo));
+    }
 }

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -14,7 +15,7 @@ import lombok.Data;
  * @author yg
  * @TableName user_info
  */
-@TableName(value ="user_info")
+@TableName(value = "user_info")
 @Data
 public class UserInfo implements Serializable {
     /**
@@ -84,6 +85,27 @@ public class UserInfo implements Serializable {
      */
     private Integer grade;
 
+    /**
+     * 姓名
+     */
+    private String name;
+
+    /**
+     * 兴趣
+     */
+    private String interest;
+
+    /**
+     * 技能
+     */
+    private String skill;
+
+    /**
+     * 手机号
+     */
+    private String phone;
+
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 
@@ -100,18 +122,22 @@ public class UserInfo implements Serializable {
         }
         UserInfo other = (UserInfo) that;
         return (this.getUserId() == null ? other.getUserId() == null : this.getUserId().equals(other.getUserId()))
-            && (this.getEmail() == null ? other.getEmail() == null : this.getEmail().equals(other.getEmail()))
-            && (this.getPassword() == null ? other.getPassword() == null : this.getPassword().equals(other.getPassword()))
-            && (this.getRole() == null ? other.getRole() == null : this.getRole().equals(other.getRole()))
-            && (this.getIsEnabled() == null ? other.getIsEnabled() == null : this.getIsEnabled().equals(other.getIsEnabled()))
-            && (this.getCreatedAt() == null ? other.getCreatedAt() == null : this.getCreatedAt().equals(other.getCreatedAt()))
-            && (this.getUpdatedAt() == null ? other.getUpdatedAt() == null : this.getUpdatedAt().equals(other.getUpdatedAt()))
-            && (this.getState() == null ? other.getState() == null : this.getState().equals(other.getState()))
-            && (this.getAddress() == null ? other.getAddress() == null : this.getAddress().equals(other.getAddress()))
-            && (this.getSex() == null ? other.getSex() == null : this.getSex().equals(other.getSex()))
-            && (this.getProfilePicture() == null ? other.getProfilePicture() == null : this.getProfilePicture().equals(other.getProfilePicture()))
-            && (this.getSchool() == null ? other.getSchool() == null : this.getSchool().equals(other.getSchool()))
-            && (this.getGrade() == null ? other.getGrade() == null : this.getGrade().equals(other.getGrade()));
+                && (this.getEmail() == null ? other.getEmail() == null : this.getEmail().equals(other.getEmail()))
+                && (this.getPassword() == null ? other.getPassword() == null : this.getPassword().equals(other.getPassword()))
+                && (this.getRole() == null ? other.getRole() == null : this.getRole().equals(other.getRole()))
+                && (this.getIsEnabled() == null ? other.getIsEnabled() == null : this.getIsEnabled().equals(other.getIsEnabled()))
+                && (this.getCreatedAt() == null ? other.getCreatedAt() == null : this.getCreatedAt().equals(other.getCreatedAt()))
+                && (this.getUpdatedAt() == null ? other.getUpdatedAt() == null : this.getUpdatedAt().equals(other.getUpdatedAt()))
+                && (this.getState() == null ? other.getState() == null : this.getState().equals(other.getState()))
+                && (this.getAddress() == null ? other.getAddress() == null : this.getAddress().equals(other.getAddress()))
+                && (this.getSex() == null ? other.getSex() == null : this.getSex().equals(other.getSex()))
+                && (this.getProfilePicture() == null ? other.getProfilePicture() == null : this.getProfilePicture().equals(other.getProfilePicture()))
+                && (this.getSchool() == null ? other.getSchool() == null : this.getSchool().equals(other.getSchool()))
+                && (this.getGrade() == null ? other.getGrade() == null : this.getGrade().equals(other.getGrade()))
+                && (this.getName() == null ? other.getName() == null : this.getName().equals(other.getName()))
+                && (this.getInterest() == null ? other.getInterest() == null : this.getInterest().equals(other.getInterest()))
+                && (this.getSkill() == null ? other.getSkill() == null : this.getSkill().equals(other.getSkill()))
+                && (this.getPhone() == null ? other.getPhone() == null : this.getPhone().equals(other.getPhone()));
     }
 
     @Override
@@ -131,6 +157,10 @@ public class UserInfo implements Serializable {
         result = prime * result + ((getProfilePicture() == null) ? 0 : getProfilePicture().hashCode());
         result = prime * result + ((getSchool() == null) ? 0 : getSchool().hashCode());
         result = prime * result + ((getGrade() == null) ? 0 : getGrade().hashCode());
+        result = prime * result + ((getName() == null) ? 0 : getName().hashCode());
+        result = prime * result + ((getInterest() == null) ? 0 : getInterest().hashCode());
+        result = prime * result + ((getSkill() == null) ? 0 : getSkill().hashCode());
+        result = prime * result + ((getPhone() == null) ? 0 : getPhone().hashCode());
         return result;
     }
 
@@ -154,6 +184,10 @@ public class UserInfo implements Serializable {
         sb.append(", school=").append(school);
         sb.append(", grade=").append(grade);
         sb.append(", serialVersionUID=").append(serialVersionUID);
+        sb.append(", name=").append(name);
+        sb.append(", interest=").append(interest);
+        sb.append(", skill=").append(skill);
+        sb.append(", phone=").append(phone);
         sb.append("]");
         return sb.toString();
     }

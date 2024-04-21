@@ -9,6 +9,7 @@ import com.sunflower.icpc_volunteer_management.mapper.UserInfoMapper;
 import com.sunflower.icpc_volunteer_management.service.UserInfoService;
 import com.sunflower.icpc_volunteer_management.userInfo.UserInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
         implements UserInfoService {
+
     //引入redis
     @Autowired
     StringRedisTemplate stringRedisTemplate;
@@ -29,11 +31,12 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
     UserInfoMapper userInfoMapper;
 
     /**
-     * @param email
-     * @param password
-     * @param captcha
+     * 注册
+     * @param email    邮箱
+     * @param password 密码
+     * @param captcha  验证码
      * @return {@link Result}
-     *///注册
+     */
     @Override
     public Result userEnroll(String email, String password, String captcha) {
         //检查数据库
@@ -73,14 +76,18 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
     }
 
     /**
-     * @param userInfo
+     * 登录
+     * @param userInfo 用户信息
      * @return {@link Result}
-     *///登录
+     */
     @Override
     public Result userLogin(UserInfo userInfo) {
         try {
             String email = userInfo.getEmail();
             String password = userInfo.getPassword();
+            if(email == null){
+                return Result.error("此项为必填项，请输入邮箱");
+            }
             //进行邮箱的验证
             UserInfo userInfo1 = query().eq("email", email).one();
             //账号不存在
@@ -88,6 +95,9 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
                 return Result.error("账户未注册，请注册后登录");
             }
             //比对账号和密码
+            if(password == null){
+                return Result.error("此项为必填项，请输入密码");
+            }
             password = DigestUtil.sha1Hex(password);
             if (!userInfo1.getPassword().equals(password)) {
                 return Result.error("密码错误，请重新输入");
@@ -99,10 +109,91 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
             return Result.success(saTokenInfo);
         } catch (Exception e) {
             log.error(String.valueOf(e));
-            return Result.error("服务器错误，请重新尝试");
+            return Result.error("未知错误，请重新尝试");
         }
     }
 
+    /**
+     * 上传用户头像
+     * @param profilePicture 头像的URL或文件路径
+     * @return 返回操作结果，成功则返回成功消息，失败则返回错误消息
+     */
+    @Override
+    public Result uploadProfilePicture(String profilePicture) {
+        try {
+            Integer id = (Integer) StpUtil.getLoginId();
+            UserInfo userInfo = query().eq("id", id).one();
+            if (userInfo == null) {
+                return Result.error("用户不存在");
+            }
+            userInfo.setProfilePicture(profilePicture);
+            int update = userInfoMapper.updateById(userInfo);
+            if (update == 1) {
+                return Result.success("上传成功");
+            } else {
+                return Result.error("上传失败");
+            }
+        } catch (Exception e) {
+            log.error(String.valueOf(e));
+            return Result.error("未知错误，请重新尝试");
+        }
+    }
+
+    /**
+     * 显示个人资料
+     * @return {@link Result}
+     */
+    @Override
+    public Result editProfile() {
+        try {
+            String id = (String) StpUtil.getLoginId();
+            UserInfo userInfo1 = query().eq("id", id).one();
+            if (userInfo1 == null) {
+                return Result.error("用户不存在,请退出重新登录");
+            }
+            UserInfo userInfo2 = new UserInfo();
+            userInfo2.setName(userInfo1.getName());
+            userInfo2.setSchool(userInfo1.getSchool());
+            userInfo2.setGrade(userInfo1.getGrade());
+            userInfo2.setAddress(userInfo1.getAddress());
+            userInfo2.setEmail(userInfo1.getEmail());
+            userInfo2.setPhone(userInfo1.getPhone());
+            userInfo2.setInterest(userInfo1.getInterest());
+            userInfo2.setSkill(userInfo1.getSkill());
+            return Result.success(userInfo2);
+        } catch (Exception e) {
+            log.error(String.valueOf(e));
+            return Result.error("未知错误，请重新尝试");
+        }
+    }
+
+
+    /**
+     * 更新个人信息
+     * @param userInfo 改后的个人信息
+     * @return {@link Result}
+     */
+    public Result changeProfile(UserInfo userInfo) {
+        try{
+            Integer id = (Integer) StpUtil.getLoginId();
+            if(id == null){
+                return Result.error("用户不存在");
+            }
+            UserInfo userInfo1 = query().eq("id", id).one();
+            if(userInfo1 == userInfo){
+                return Result.error("未进行修改");
+            }
+            int result = userInfoMapper.updateById(userInfo);
+            if(result == 1){
+                return Result.success("修改成功");
+            }else{
+                return Result.error("未找到指定用户");
+            }
+        }catch (Exception e){
+            log.error(String.valueOf(e));
+            return Result.error("未知错误，请重新尝试");
+        }
+}
 
 }
 
