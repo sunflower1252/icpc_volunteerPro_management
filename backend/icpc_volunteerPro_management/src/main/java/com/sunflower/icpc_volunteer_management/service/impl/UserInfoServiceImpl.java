@@ -3,6 +3,7 @@ package com.sunflower.icpc_volunteer_management.service.impl;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.crypto.digest.DigestUtil;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sunflower.icpc_volunteer_management.commom.Result;
 import com.sunflower.icpc_volunteer_management.mapper.UserInfoMapper;
@@ -10,9 +11,12 @@ import com.sunflower.icpc_volunteer_management.service.UserInfoService;
 import com.sunflower.icpc_volunteer_management.userInfo.UserInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.User;
+import org.dromara.x.file.storage.core.FileInfo;
+import org.dromara.x.file.storage.core.FileStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author yg
@@ -29,9 +33,14 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
     StringRedisTemplate stringRedisTemplate;
     @Autowired
     UserInfoMapper userInfoMapper;
+    //引入云平台存储
+    @Autowired
+    private FileStorageService fileStorageService;
+
 
     /**
      * 注册
+     *
      * @param email    邮箱
      * @param password 密码
      * @param captcha  验证码
@@ -77,6 +86,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
 
     /**
      * 登录
+     *
      * @param userInfo 用户信息
      * @return {@link Result}
      */
@@ -85,7 +95,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
         try {
             String email = userInfo.getEmail();
             String password = userInfo.getPassword();
-            if(email == null){
+            if (email == null) {
                 return Result.error("此项为必填项，请输入邮箱");
             }
             //进行邮箱的验证
@@ -95,7 +105,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
                 return Result.error("账户未注册，请注册后登录");
             }
             //比对账号和密码
-            if(password == null){
+            if (password == null) {
                 return Result.error("此项为必填项，请输入密码");
             }
             password = DigestUtil.sha1Hex(password);
@@ -115,20 +125,27 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
 
     /**
      * 上传用户头像
-     * @param profilePicture 头像的URL或文件路径
+     *
      * @return 返回操作结果，成功则返回成功消息，失败则返回错误消息
      */
     @Override
-    public Result uploadProfilePicture(String profilePicture) {
+    public Result uploadProfilePicture(MultipartFile file) {
         try {
-            Integer id = (Integer) StpUtil.getLoginId();
-            UserInfo userInfo = query().eq("id", id).one();
+            Integer id = StpUtil.getLoginIdAsInt();
+            UserInfo userInfo = query().eq("user_id", id).one();
             if (userInfo == null) {
                 return Result.error("用户不存在");
             }
+            //上传头像到云平台
+            FileInfo fileInfo = fileStorageService.of(file)
+                    .setObjectId(id)   //关联对象id
+                    .upload();  //将文件上传到云平台
+            //获取头像上传后的url地址，存储到数据库中
+            String profilePicture = fileInfo.getUrl();
             userInfo.setProfilePicture(profilePicture);
+            boolean exists = fileStorageService.exists(fileInfo);
             int update = userInfoMapper.updateById(userInfo);
-            if (update == 1) {
+            if (exists && update == 1) {
                 return Result.success("上传成功");
             } else {
                 return Result.error("上传失败");
@@ -141,13 +158,14 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
 
     /**
      * 显示个人资料
+     *
      * @return {@link Result}
      */
     @Override
     public Result editProfile() {
         try {
-            String id = (String) StpUtil.getLoginId();
-            UserInfo userInfo1 = query().eq("id", id).one();
+            Integer id = StpUtil.getLoginIdAsInt();
+            UserInfo userInfo1 = query().eq("user_id", id).one();
             if (userInfo1 == null) {
                 return Result.error("用户不存在,请退出重新登录");
             }
@@ -170,30 +188,33 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
 
     /**
      * 更新个人信息
+     *
      * @param userInfo 改后的个人信息
      * @return {@link Result}
      */
     public Result changeProfile(UserInfo userInfo) {
-        try{
-            Integer id = (Integer) StpUtil.getLoginId();
-            if(id == null){
+        try {
+            Integer id = StpUtil.getLoginIdAsInt();
+            if (id == null) {
                 return Result.error("用户不存在");
             }
-            UserInfo userInfo1 = query().eq("id", id).one();
-            if(userInfo1 == userInfo){
+            UserInfo userInfo1 = query().eq("user_id", id).one();
+            if (userInfo1 == userInfo) {
                 return Result.error("未进行修改");
             }
-            int result = userInfoMapper.updateById(userInfo);
-            if(result == 1){
+            UpdateWrapper<UserInfo> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.eq("user_id", id);
+            int result = userInfoMapper.update(userInfo, updateWrapper);
+            if (result == 1) {
                 return Result.success("修改成功");
-            }else{
+            } else {
                 return Result.error("未找到指定用户");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error(String.valueOf(e));
             return Result.error("未知错误，请重新尝试");
         }
-}
+    }
 
 }
 

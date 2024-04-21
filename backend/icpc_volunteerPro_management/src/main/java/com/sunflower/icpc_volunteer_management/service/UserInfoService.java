@@ -4,6 +4,7 @@ import com.sunflower.icpc_volunteer_management.commom.Result;
 import com.sunflower.icpc_volunteer_management.userInfo.UserInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author yg
@@ -18,7 +19,7 @@ public interface UserInfoService extends IService<UserInfo> {
     Result userLogin(UserInfo userInfo);
 
     //上传个人照片
-    Result uploadProfilePicture(String profilePicture);
+    Result uploadProfilePicture(MultipartFile file);
 
     //显示个人资料
     Result editProfile();

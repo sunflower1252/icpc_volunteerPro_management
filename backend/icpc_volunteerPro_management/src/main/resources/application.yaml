@@ -3,7 +3,7 @@ spring:
   application:
     name: icpc_volunteer_management_bk
   datasource:
-    url: jdbc:mysql://localhost:3306/icpcyy
+    url: jdbc:mysql://localhost:3306/volunteerSpace
     username: root
     password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -31,7 +31,20 @@ sa-token:
   token-style: uuid
   # 是否输出操作日志
   is-log: true
-
+#x file storage
+dromara:
+  x-file-storage: #文件存储配置
+    default-platform: aliyun-oss-1 #默认使用的存储平台
+    thumbnail-suffix: ".min.jpg" #缩略图后缀，例如【.min.jpg】【.png】
+    aliyun-oss:
+      - platform: aliyun-oss-1 # 存储平台标识
+        enable-storage: true  # 启用存储
+        access-key: LTAI5tAngERK9139nDoMmSdW
+        secret-key: ZxwpPRqJLd10tUqVqnJfN2Kw27kheF
+        bucket-name: big-demo
+        domain: https://big-demo.oss-cn-beijing.aliyuncs.com/ # 访问域名，注意“/”结尾，例如：https://abc.oss-cn-shanghai.aliyuncs.com/
+        base-path: test/ # 基础路径
+        end-point: oss-cn-beijing.aliyuncs.com
 
 
 
