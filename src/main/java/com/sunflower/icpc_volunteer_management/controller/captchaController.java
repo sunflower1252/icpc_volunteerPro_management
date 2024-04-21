@@ -28,7 +28,7 @@ public class captchaController {
 
     /**
      * 注册
-     * @param email
+     * @param email 邮箱
      * @return {@link Result}
      */
     @GetMapping("/sendMessage")

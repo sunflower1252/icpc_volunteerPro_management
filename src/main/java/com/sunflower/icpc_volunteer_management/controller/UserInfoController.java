@@ -18,9 +18,9 @@ public class UserInfoController {
 
     /**
      * 注册
-     * @param email
-     * @param password
-     * @param captcha
+     * @param email 邮箱
+     * @param password 密码
+     * @param captcha 验证码
      * @return {@link Result}
      */
     @PostMapping("/userEnroll")

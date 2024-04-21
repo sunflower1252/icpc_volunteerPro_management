@@ -3,7 +3,7 @@ package com.sunflower.icpc_volunteer_management.service;
 import com.sunflower.icpc_volunteer_management.commom.Result;
 import com.sunflower.icpc_volunteer_management.userInfo.UserInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.springframework.stereotype.Service;
+
 
 /**
 * @author yg
