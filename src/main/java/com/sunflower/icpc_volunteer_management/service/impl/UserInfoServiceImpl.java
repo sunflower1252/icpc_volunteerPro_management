@@ -28,7 +28,12 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
     @Autowired
     UserInfoMapper userInfoMapper;
 
-    //注册
+    /**
+     * @param email
+     * @param password
+     * @param captcha
+     * @return {@link Result}
+     *///注册
     @Override
     public Result userEnroll(String email, String password, String captcha) {
         //检查数据库
@@ -67,7 +72,10 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
         }
     }
 
-    //登录
+    /**
+     * @param userInfo
+     * @return {@link Result}
+     *///登录
     @Override
     public Result userLogin(UserInfo userInfo) {
         try {
@@ -77,7 +85,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
             UserInfo userInfo1 = query().eq("email", email).one();
             //账号不存在
             if (userInfo1 == null) {
-                Result.error("账户未注册，请注册后登录");
+                return Result.error("账户未注册，请注册后登录");
             }
             //比对账号和密码
             password = DigestUtil.sha1Hex(password);

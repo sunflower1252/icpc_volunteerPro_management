@@ -16,13 +16,23 @@ public class UserInfoController {
     @Autowired
     UserInfoService userInfoService;
 
-    //注册
+    /**
+     * 注册
+     * @param email
+     * @param password
+     * @param captcha
+     * @return {@link Result}
+     */
     @PostMapping("/userEnroll")
     public Result userEnroll(@RequestParam String email,String password, String captcha){
         return Result.success(userInfoService.userEnroll(email,password,captcha));
     }
 
-    //登录
+    /**
+     * 登录
+     * @param userInfo
+     * @return {@link Result}
+     */
     @PostMapping("/userLogin")
     public Result userLogin(@RequestBody UserInfo userInfo){
         return Result.success(userInfoService.userLogin(userInfo));
