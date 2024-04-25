@@ -21,7 +21,7 @@ public class OrganizationAuditController {
      * 删除活动
      * @param organizationId 要被删除的活动id
      * @return {@link Result}
-     *///删除活动
+     */
     @GetMapping("/deleteOrganizationAudit")
     public Result deleteOrganizationAudit(Integer organizationId) {
         return organizationAuditService.deleteOrganizationAudit(organizationId);
