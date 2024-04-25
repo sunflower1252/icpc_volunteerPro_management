@@ -18,7 +18,8 @@
             <el-input v-model="Email" />
           </el-form-item> <el-form-item label="密码：">
             <el-input type="password" v-model="password" />
-          </el-form-item> <el-row>
+          </el-form-item> 
+          <el-row>
             <el-checkbox class="checkBox" v-model="isAgree" label="同意用户使用准则" name="type" />
           </el-row>
           <el-button type="primary" class="loginBtn" @click="login"> 登录 </el-button>
