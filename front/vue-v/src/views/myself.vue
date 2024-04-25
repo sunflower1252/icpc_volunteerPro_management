@@ -32,7 +32,7 @@
       </div>
       <el-main class="main-container">
   <el-col :span="6">
-    <h5>个人活动中心</h5>
+    <h4>个人活动中心</h4>
     
       <el-card class="box-card">
   <div class="activity-list"></div>
@@ -50,7 +50,7 @@
  <el-card>
   <div class="background-image">
     <span style="float: left" shadow="hover"><b>技能与兴趣</b></span><br><br>
-    <el-checkbox-group v-model="checkedSkills" style="height:200px;overflow-y:scroll;">
+    <el-checkbox-group v-model="checkedSkills" style="height:500px;overflow-y:scroll;">
   <el-col :span="6" v-for="skill in skills" :key="skill.value">
     <el-checkbox
       :label="skill.value"
@@ -183,7 +183,7 @@
 </script>
 <style>
 .el-main {
-  background-color: #eff30d;
+  background-color: #dbeeec;
   color: #333;
   text-align: center;
   line-height: 200px;
