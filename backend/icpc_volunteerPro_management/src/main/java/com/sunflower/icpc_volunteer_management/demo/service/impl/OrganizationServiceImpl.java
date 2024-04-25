@@ -178,7 +178,7 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
             //更新organization数据库
             int update1 = organizationMapper.updateById(organization);
             if(update1 != 1){
-                return Result.error("修改失败02");
+                return Result.error("修改失败01");
             }
             //在organizationAudit表中获取报名的userid，
             //根据获取的userid在userInfo表中获取email邮箱地址
@@ -200,7 +200,7 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
             organizationAudit.setOrganizationStudent("");
             int update2 = organizationAuditMapper.updateById(organizationAudit);
             if(update2 != 1){
-                return Result.error("修改失败01");
+                return Result.error("修改失败02");
             }
             return Result.success("修改成功");
         }catch (Exception e){
