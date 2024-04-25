@@ -1,6 +1,9 @@
 package com.sunflower.icpc_volunteer_management.demo.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.extra.mail.Mail;
+import cn.hutool.extra.mail.MailUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageInfo;
 import com.github.pagehelper.page.PageMethod;
@@ -118,14 +121,14 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
             //获取报名的学生
             String students = organizationAudit.getOrganizationStudent();
             StringBuilder sb = new StringBuilder();
-            sb.append(students).append(",");
-            //根据登录的账号，获取名字进行名字的添加
+            sb.append(students).append("，");
+            //根据登录的账号，获取user_id进行名字的添加
             UserInfo userInfo = userInfoMapper.selectById(userId);
             if(userInfo == null){
                 return Result.error("用户不存在，请重新登陆后报名");
             }
-            String name = userInfo.getName();
-            sb.append(name);
+            Integer userid = userInfo.getUserId();
+            sb.append(userid);
             students = sb.toString();
             //将数据直接存储到数据库中
             organizationAudit.setOrganizationStudent(students);
@@ -168,13 +171,36 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
     @Override
     public Result reviseOrganization(Organization organization){
         try{
-            //直接更新数据库
-            int update = organizationMapper.updateById(organization);
+            //将此活动从未审核改为审核通过
             if("审核通过".equals(organization.getOrganizationStatus())){
                 organization.setOrganizationType("未审核");
             }
-            if(update != 1){
-                return Result.error("修改失败");
+            //更新organization数据库
+            int update1 = organizationMapper.updateById(organization);
+            if(update1 != 1){
+                return Result.error("修改失败02");
+            }
+            //在organizationAudit表中获取报名的userid，
+            //根据获取的userid在userInfo表中获取email邮箱地址
+            // 然后进行一个一个发邮箱进行重新报名的邮件
+            OrganizationAudit organizationAudit = organizationAuditMapper.selectById(organization.getOrganizationId());
+            String students = organizationAudit.getOrganizationStudent();
+            String[] split = students.split(",");
+            String name = organization.getOrganizationName();
+            int length = split.length;
+            for (int i = 0; i < length; i++) {
+                String student = split[i];
+                UserInfo userInfo = userInfoMapper.selectById(student);
+                String email = userInfo.getEmail();
+                String text = "活动更新通知";
+                String word = "您好，您报名的"+"“"+name+"”"+"活动已经更新，请稍稍后重新报名，在这里给您添麻烦了，不好意思";
+                MailUtil.send(email,text,word,false);
+            }
+            //更新organizationAudit数据库，删除学生姓名
+            organizationAudit.setOrganizationStudent("");
+            int update2 = organizationAuditMapper.updateById(organizationAudit);
+            if(update2 != 1){
+                return Result.error("修改失败01");
             }
             return Result.success("修改成功");
         }catch (Exception e){
