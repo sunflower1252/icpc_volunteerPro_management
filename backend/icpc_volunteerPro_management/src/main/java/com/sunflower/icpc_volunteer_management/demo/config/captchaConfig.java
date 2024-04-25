@@ -1,8 +1,8 @@
-package com.sunflower.icpc_volunteer_management.controller;
+package com.sunflower.icpc_volunteer_management.demo.config;
 
 import cn.hutool.extra.mail.MailUtil;
-import com.sunflower.icpc_volunteer_management.commom.Result;
-import com.sunflower.icpc_volunteer_management.utils.captchaUtil;
+import com.sunflower.icpc_volunteer_management.demo.commom.Result;
+import com.sunflower.icpc_volunteer_management.demo.utils.captchaUtil;
 import jakarta.validation.constraints.Email;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +19,9 @@ import java.util.concurrent.TimeUnit;
  * @author yg
  */
 @Controller
-@RestController("captcha")
+@RestController("/captcha")
 @Slf4j
-public class captchaController {
+public class captchaConfig {
 
     @Autowired
     StringRedisTemplate stringRedisTemplate;

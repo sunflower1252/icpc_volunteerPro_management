@@ -1,4 +1,4 @@
-package com.sunflower.icpc_volunteer_management.commom;
+package com.sunflower.icpc_volunteer_management.demo.commom;
 
 import lombok.Data;
 

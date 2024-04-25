@@ -1,8 +1,8 @@
-package com.sunflower.icpc_volunteer_management.controller;
+package com.sunflower.icpc_volunteer_management.demo.controller;
 
-import com.sunflower.icpc_volunteer_management.commom.Result;
-import com.sunflower.icpc_volunteer_management.service.UserInfoService;
-import com.sunflower.icpc_volunteer_management.userInfo.UserInfo;
+import com.sunflower.icpc_volunteer_management.demo.commom.Result;
+import com.sunflower.icpc_volunteer_management.demo.service.UserInfoService;
+import com.sunflower.icpc_volunteer_management.demo.entity.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,6 +18,8 @@ public class UserInfoController {
     UserInfoService userInfoService;
 
     /**
+     * 注册
+     *
      * @param email    邮箱
      * @param password 密码
      * @param captcha  验证码

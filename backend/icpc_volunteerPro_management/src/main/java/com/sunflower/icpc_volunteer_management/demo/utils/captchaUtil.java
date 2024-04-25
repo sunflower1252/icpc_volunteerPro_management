@@ -1,4 +1,4 @@
-package com.sunflower.icpc_volunteer_management.utils;
+package com.sunflower.icpc_volunteer_management.demo.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

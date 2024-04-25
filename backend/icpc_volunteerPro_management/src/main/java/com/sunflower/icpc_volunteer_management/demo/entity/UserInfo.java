@@ -1,4 +1,4 @@
-package com.sunflower.icpc_volunteer_management.userInfo;
+package com.sunflower.icpc_volunteer_management.demo.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;

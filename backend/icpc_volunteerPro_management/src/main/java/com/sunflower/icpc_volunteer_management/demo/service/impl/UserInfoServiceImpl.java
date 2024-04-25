@@ -1,16 +1,15 @@
-package com.sunflower.icpc_volunteer_management.service.impl;
+package com.sunflower.icpc_volunteer_management.demo.service.impl;
 
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.sunflower.icpc_volunteer_management.commom.Result;
-import com.sunflower.icpc_volunteer_management.mapper.UserInfoMapper;
-import com.sunflower.icpc_volunteer_management.service.UserInfoService;
-import com.sunflower.icpc_volunteer_management.userInfo.UserInfo;
+import com.sunflower.icpc_volunteer_management.demo.commom.Result;
+import com.sunflower.icpc_volunteer_management.demo.mapper.UserInfoMapper;
+import com.sunflower.icpc_volunteer_management.demo.service.UserInfoService;
+import com.sunflower.icpc_volunteer_management.demo.entity.UserInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
 import org.dromara.x.file.storage.core.FileInfo;
 import org.dromara.x.file.storage.core.FileStorageService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,9 +1,8 @@
-package com.sunflower.icpc_volunteer_management.service;
+package com.sunflower.icpc_volunteer_management.demo.service;
 
-import com.sunflower.icpc_volunteer_management.commom.Result;
-import com.sunflower.icpc_volunteer_management.userInfo.UserInfo;
+import com.sunflower.icpc_volunteer_management.demo.commom.Result;
+import com.sunflower.icpc_volunteer_management.demo.entity.UserInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -13,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public interface UserInfoService extends IService<UserInfo> {
     //注册
-    Result userEnroll(String email,String password, String captcha);
+    Result userEnroll(String email, String password, String captcha);
 
     //登录
     Result userLogin(UserInfo userInfo);

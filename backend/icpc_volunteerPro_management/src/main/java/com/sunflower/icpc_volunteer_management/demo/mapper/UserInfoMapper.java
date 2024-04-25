@@ -1,6 +1,6 @@
-package com.sunflower.icpc_volunteer_management.mapper;
+package com.sunflower.icpc_volunteer_management.demo.mapper;
 
-import com.sunflower.icpc_volunteer_management.userInfo.UserInfo;
+import com.sunflower.icpc_volunteer_management.demo.entity.UserInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
