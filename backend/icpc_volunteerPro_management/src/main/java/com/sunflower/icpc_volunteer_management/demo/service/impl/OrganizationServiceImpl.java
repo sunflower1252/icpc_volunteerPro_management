@@ -188,13 +188,12 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
             String[] split = students.split(",");
             String name = organization.getOrganizationName();
             int length = split.length;
-            for (int i = 0; i < length; i++) {
-                String student = split[i];
+            for (String student : split) {
                 UserInfo userInfo = userInfoMapper.selectById(student);
                 String email = userInfo.getEmail();
                 String text = "活动更新通知";
-                String word = "您好，您报名的"+"“"+name+"”"+"活动已经更新，请稍稍后重新报名，在这里给您添麻烦了，不好意思";
-                MailUtil.send(email,text,word,false);
+                String word = "您好，您报名的" + "“" + name + "”" + "活动已经更新，请稍稍后重新报名，在这里给您添麻烦了，不好意思";
+                MailUtil.send(email, text, word, false);
             }
             //更新organizationAudit数据库，删除学生姓名
             organizationAudit.setOrganizationStudent("");

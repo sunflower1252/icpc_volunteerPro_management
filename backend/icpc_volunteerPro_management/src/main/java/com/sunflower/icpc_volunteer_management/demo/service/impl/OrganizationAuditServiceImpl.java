@@ -48,13 +48,12 @@ public class OrganizationAuditServiceImpl extends ServiceImpl<OrganizationAuditM
             String organizationName = organizationMapper.selectById(organizationId).getOrganizationName();
             String[] split = students.split("，");
             int length = split.length;
-            for (int i = 0; i < length; i++) {
-                String student = split[i];
+            for (String student : split) {
                 UserInfo userInfo = userInfoMapper.selectById(student);
                 String email = userInfo.getEmail();
                 String text = "活动删除通知";
-                String word = "您好，您报名的"+"“"+organizationName+"”"+"活动已经被删除，请注意活动的最新消息";
-                MailUtil.send(email,text,word,false);
+                String word = "您好，您报名的" + "“" + organizationName + "”" + "活动已经被删除，请注意活动的最新消息";
+                MailUtil.send(email, text, word, false);
             }
             int delete = organizationAuditMapper.deleteById(organizationId);
             if(delete != 1){
