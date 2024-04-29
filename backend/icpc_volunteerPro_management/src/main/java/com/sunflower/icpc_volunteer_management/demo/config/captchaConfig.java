@@ -10,6 +10,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,8 +19,9 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author yg
  */
-@Controller
-@RestController("/captcha")
+
+@RestController
+@RequestMapping("/captcha")
 @Slf4j
 public class captchaConfig {
 
