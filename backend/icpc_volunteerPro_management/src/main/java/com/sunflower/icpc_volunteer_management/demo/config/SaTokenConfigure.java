@@ -18,7 +18,7 @@ public class SaTokenConfigure implements WebMvcConfigurer {
         registry.addInterceptor(new SaInterceptor(handle -> StpUtil.checkLogin()))
                 .addPathPatterns("/**")
                 .excludePathPatterns("/UserInfo/userLogin")
-                .excludePathPatterns("/UserInfo/userEnroll");
+                .excludePathPatterns("/UserInfo/userEnroll").excludePathPatterns("/captcha/sendMessage");
     }
 }
 

@@ -26,4 +26,13 @@ public class OrganizationAuditController {
     public Result deleteOrganizationAudit(Integer organizationId) {
         return organizationAuditService.deleteOrganizationAudit(organizationId);
     }
+
+    /**
+     * 获取活动的所有报名数据
+     * @param organizationId 活动id
+     * @return {@link Result}
+     */
+    public Result getStudentsFromOrganizationAudit(Integer organizationId) {
+        return Result.success(organizationAuditService.getStudentsFromOrganizationAudit(organizationId));
+    }
 }

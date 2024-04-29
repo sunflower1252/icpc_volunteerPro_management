@@ -12,4 +12,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface OrganizationAuditService extends IService<OrganizationAudit> {
 
     Result deleteOrganizationAudit(Integer organizationId);
+
+    Result getStudentsFromOrganizationAudit(Integer organizationId);
 }

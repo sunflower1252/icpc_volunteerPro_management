@@ -191,12 +191,10 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
      * @param userInfo 改后的个人信息
      * @return {@link Result}
      */
+    @Override
     public Result changeProfile(UserInfo userInfo) {
         try {
             Integer id = StpUtil.getLoginIdAsInt();
-            if (id == null) {
-                return Result.error("用户不存在");
-            }
             UserInfo userInfo1 = query().eq("user_id", id).one();
             if (userInfo1 == userInfo) {
                 return Result.error("未进行修改");
