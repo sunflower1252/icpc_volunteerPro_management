@@ -1,11 +1,11 @@
 #name,mysql,redis
 spring:
   application:
-    name: icpc_volunteer_management_bk
+    name: icpc_volunteer_management
   datasource:
-    url: jdbc:mysql://localhost:3306/icpcyy
+    url: jdbc:mysql://localhost:3306/volunteerspace
     username: root
-    password: lc210085
+    password: yg050206.
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
   data:

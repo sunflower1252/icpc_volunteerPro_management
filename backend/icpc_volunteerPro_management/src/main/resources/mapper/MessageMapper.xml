@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sunflower.icpc_volunteer_management.demo.mapper.MessageMapper">
+
+    <resultMap id="BaseResultMap" type="com.sunflower.icpc_volunteer_management.demo.entity.Message">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="fromId" column="from_id" jdbcType="INTEGER"/>
+            <result property="toId" column="to_id" jdbcType="INTEGER"/>
+            <result property="conversationId" column="conversation_id" jdbcType="VARCHAR"/>
+            <result property="content" column="content" jdbcType="VARCHAR"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,from_id,to_id,
+        conversation_id,content,status,
+        create_time
+    </sql>
+
+    <insert id="saveBatch">
+        INSERT INTO message (from_id,to_id,conversation_id,content,status,create_time)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.fromId},#{item.toId},#{item.conversationId},#{item.content},#{item.status},#{item.createTime})
+        </foreach>
+    </insert>
+
+    <select id="selectByLetter" resultType="java.lang.String">
+        SELECT conversation_id
+        FROM message
+        WHERE from_id = #{userID} OR to_id = #{userID}
+        GROUP BY conversation_id;
+    </select>
+
+</mapper>
