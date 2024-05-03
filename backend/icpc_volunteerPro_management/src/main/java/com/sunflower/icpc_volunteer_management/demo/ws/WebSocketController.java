@@ -1,5 +1,6 @@
 package com.sunflower.icpc_volunteer_management.demo.ws;
 
+import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,11 +15,12 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/websocket/{userId}")
 public class WebSocketController {
+
     @Autowired
     WebSocket webSocket;
 
     @PostMapping("/sendMessage")
-    public String sendMessage(@RequestParam String message,Integer toId) throws IOException {
+    public String sendMessage(@RequestParam String message, @PathParam(value ="toId") Integer toId) throws IOException {
         webSocket.sendMessage(message,toId);
         return "success";
     }

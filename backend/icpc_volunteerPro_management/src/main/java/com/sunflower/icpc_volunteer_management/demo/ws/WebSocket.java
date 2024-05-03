@@ -6,14 +6,23 @@ import com.alibaba.fastjson2.JSONObject;
 import com.sunflower.icpc_volunteer_management.demo.entity.Message;
 import com.sunflower.icpc_volunteer_management.demo.mapper.MessageMapper;
 import jakarta.websocket.*;
+import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
+import java.nio.file.LinkOption;
 import java.util.Date;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -27,18 +36,16 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @ServerEndpoint("/websocket/{userId}")  // 接口路径 ws://localhost:8080/webSocket/userId;
 public class WebSocket {
 
-    @Autowired
-    MessageMapper messageMapper;
+    private static ApplicationContext applicationContext;
+    private MessageMapper messageMapper;
+    public static void setApplicationContext(ApplicationContext applicationContext){
+        WebSocket.applicationContext = applicationContext;
+    }
+
     /**
      * 用户id
      */
     public Integer userId;
-
-
-    /**
-     * 设置一次性存储数据的list的长度为固定值，每当list的长度达到固定值时，向数据库存储一次
-     */
-    private static final Integer LIST_SIZE = 3;
 
     /**
      * 新建list集合存储数据
@@ -65,13 +72,11 @@ public class WebSocket {
      * @param session session
      */
     @OnOpen
-    public void onOpen(Session session){
+    public void onOpen(@PathParam(value = "userId") Integer userId, Session session){
         try{
-            //赋值用户id和session
-            this.userId = StpUtil.getLoginIdAsInt();
-            /**
-             * session会话，通过session给客户端发送数据
-             */
+            //从redis中获取用户id和session
+            this.userId =userId;
+            //session会话，通过session给客户端发送数据
             webSockets.add(this);
             sessionPool.put(userId, session);
             log.info("【新的websocket连接，用户名】："+userId);
@@ -94,9 +99,21 @@ public class WebSocket {
     @OnClose
     public void onClose() {
         try{
-            webSockets.remove(this);
-            sessionPool.remove(this.userId);
-            log.info("【websocket消息：用户已断开，id】："+userId);
+            if(this.userId != null){
+                webSockets.remove(this);
+                sessionPool.remove(this.userId);
+
+                //判断信息列表中是否还有信息没有存入数据库
+                if(!MessageList.isEmpty()){
+                    //将list中的数据存入数据库
+                    //实例化Bean
+                    messageMapper = applicationContext.getBean(MessageMapper.class);
+                    messageMapper.saveBatch(MessageList);
+                    //清空list
+                    MessageList.clear();
+                }
+                log.info("【websocket消息：用户已断开，id】："+userId);
+            }
         }catch (Exception e){
             log.error("Error 【closing】 WebSocket connection：",e);
         }
@@ -108,10 +125,10 @@ public class WebSocket {
     }
 
     @OnMessage
-    public void onMessage(String message,Session session){
+    public void onMessage(@PathParam(value = "userId") Integer userId,String message){
         try {
             //获取当前用户id
-            Integer userId = StpUtil.getLoginIdAsInt();
+            this.userId = userId;
             log.info("【来自客户端的消息】：{}，客户端的id：{}", message, userId);
             JSONObject jsonObject = JSONObject.parseObject(message);
             //发送的内容
@@ -131,15 +148,10 @@ public class WebSocket {
             }
             message1.setCreateTime(new Date());
             message1.setContent(textMessage);
-
-            //批量保存信息
-            //将每个信息保存道list中
-            //使用批量保存
-            if(MessageList.size()==LIST_SIZE){
-                messageMapper.saveBatch(MessageList);
-                MessageList.clear();
-            }
-
+            MessageList.add(message1);
+            //实例化Bean
+            messageMapper = applicationContext.getBean(MessageMapper.class);
+            messageMapper.insert(message1);
         }catch (Exception e){
             log.error("Error 【OnMessage】:",e);
         }
@@ -147,12 +159,13 @@ public class WebSocket {
 
     public void sendMessage(String message,Integer toId) throws IOException {
         try {
-            //遍历map集合，如果对方在线，那么直接发送，如果对方不在线，存储到rabbitMQ消息队列中
-            Session session1 = sessionPool.get(toId);
+            //遍历sessionPol集合，如果对方在线，那么直接发送
+            // 如果对方不在线，消息存储到rabbitMQ消息队列中
+            Session session = sessionPool.get(toId);
             //如果对方在线，直接通过websocket发送消息
-            if(session1 != null && session1.isOpen()){
+            if(session != null && session.isOpen()){
                 log.info("【websocket消息】 发送消息给："+toId+" ，内容为："+message);
-                session1.getBasicRemote().sendText(message);
+                session.getBasicRemote().sendText(message);
             }
             //如果对方不在线，存储到rabbitMQ消息队列中
             else{

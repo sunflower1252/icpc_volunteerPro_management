@@ -22,4 +22,5 @@ public class WebSocketConfig {
     public ServerEndpointExporter serverEndpointExporter() {
         return new ServerEndpointExporter();
     }
+
 }
