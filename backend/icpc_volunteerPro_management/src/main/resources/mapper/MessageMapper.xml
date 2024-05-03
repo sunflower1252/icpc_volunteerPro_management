@@ -20,14 +20,6 @@
         create_time
     </sql>
 
-    <insert id="saveBatch">
-        INSERT INTO message (from_id,to_id,conversation_id,content,status,create_time)
-        VALUES
-        <foreach collection="list" item="item" separator=",">
-            (#{item.fromId},#{item.toId},#{item.conversationId},#{item.content},#{item.status},#{item.createTime})
-        </foreach>
-    </insert>
-
     <select id="selectByLetter" resultType="java.lang.String">
         SELECT conversation_id
         FROM message

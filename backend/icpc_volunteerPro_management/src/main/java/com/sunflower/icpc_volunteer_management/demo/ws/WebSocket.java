@@ -48,15 +48,11 @@ public class WebSocket {
     public Integer userId;
 
     /**
-     * 新建list集合存储数据
+    concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。
+    虽然@Component默认是单例模式的，但springboot还是会为每个websocket连接初始化一个bean，所以可以用一个静态set保存起来。
+     注：底下WebSocket是当前类名
+     注：这个集合用于存放每个客户端的websocket连接
      */
-    private static ConcurrentLinkedQueue<Message> MessageList = new ConcurrentLinkedQueue<>();
-
-
-    //concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。
-    //虽然@Component默认是单例模式的，但springboot还是会为每个websocket连接初始化一个bean，所以可以用一个静态set保存起来。
-    //  注：底下WebSocket是当前类名
-    //  注：这个集合用于存放每个客户端的websocket连接
     public static CopyOnWriteArraySet<WebSocket> webSockets = new CopyOnWriteArraySet<>();
 
     /**
@@ -102,16 +98,6 @@ public class WebSocket {
             if(this.userId != null){
                 webSockets.remove(this);
                 sessionPool.remove(this.userId);
-
-                //判断信息列表中是否还有信息没有存入数据库
-                if(!MessageList.isEmpty()){
-                    //将list中的数据存入数据库
-                    //实例化Bean
-                    messageMapper = applicationContext.getBean(MessageMapper.class);
-                    messageMapper.saveBatch(MessageList);
-                    //清空list
-                    MessageList.clear();
-                }
                 log.info("【websocket消息：用户已断开，id】："+userId);
             }
         }catch (Exception e){
@@ -148,8 +134,8 @@ public class WebSocket {
             }
             message1.setCreateTime(new Date());
             message1.setContent(textMessage);
-            MessageList.add(message1);
-            //实例化Bean
+
+            //实例化Bean，将信息存入数据库中
             messageMapper = applicationContext.getBean(MessageMapper.class);
             messageMapper.insert(message1);
         }catch (Exception e){

@@ -18,7 +18,6 @@ public interface MessageMapper extends BaseMapper<Message> {
 
     List<String> selectByLetter(Integer userId);
 
-    void saveBatch(ConcurrentLinkedQueue<Message> messageList);
 }
 
 
