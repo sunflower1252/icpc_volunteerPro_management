@@ -1,30 +1,20 @@
 package com.sunflower.icpc_volunteer_management.demo.ws;
 
-import cn.dev33.satoken.stp.StpUtil;
-
 import com.alibaba.fastjson2.JSONObject;
 import com.sunflower.icpc_volunteer_management.demo.entity.Message;
 import com.sunflower.icpc_volunteer_management.demo.mapper.MessageMapper;
 import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
-import java.nio.file.LinkOption;
+import java.util.Collections;
 import java.util.Date;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
@@ -36,11 +26,17 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @ServerEndpoint("/websocket/{userId}")  // 接口路径 ws://localhost:8080/webSocket/userId;
 public class WebSocket {
 
+    //注入mapper
     private static ApplicationContext applicationContext;
     private MessageMapper messageMapper;
+    //注入redis
+    private StringRedisTemplate stringRedisTemplate;
     public static void setApplicationContext(ApplicationContext applicationContext){
         WebSocket.applicationContext = applicationContext;
     }
+
+
+
 
     /**
      * 用户id
@@ -78,11 +74,10 @@ public class WebSocket {
             log.info("【新的websocket连接，用户名】："+userId);
             log.info("【当前在线人数为】："+sessionPool.size());
 
-            // 上线时查看rabbitmq中是否有离线时的消息
-            /*
-              假设rabbitmq存在离线消息，则发送给用户
-              此处省略代码
-             */
+            // 上线时查看redis中是否有离线时的消息
+            //实例化Bean,读取redis中是否含有离线消息
+            stringRedisTemplate = applicationContext.getBean(StringRedisTemplate.class);
+            //使用redis中的Stream方法进行读取关键字为userId的Stream
 
         }catch (Exception e){
             log.error("Error 【opening】 WebSocket connection：", e);
@@ -116,9 +111,14 @@ public class WebSocket {
             //获取当前用户id
             this.userId = userId;
             log.info("【来自客户端的消息】：{}，客户端的id：{}", message, userId);
+            //将json字符串类型的数据反序列化为Message类型的对象
             JSONObject jsonObject = JSONObject.parseObject(message);
             //发送的内容
-            String textMessage = jsonObject.getString("message");
+            String content = jsonObject.getString("content");
+            if(content == null){
+                log.info("消息不能为空");
+                return;
+            }
             //获取接收人id
             int toId = jsonObject.getInteger("to");
 
@@ -133,7 +133,7 @@ public class WebSocket {
                 message1.setConversationId(userId+"_"+toId);
             }
             message1.setCreateTime(new Date());
-            message1.setContent(textMessage);
+            message1.setContent(content);
 
             //实例化Bean，将信息存入数据库中
             messageMapper = applicationContext.getBean(MessageMapper.class);
@@ -143,22 +143,31 @@ public class WebSocket {
         }
     }
 
-    public void sendMessage(String message,Integer toId) throws IOException {
+    public void sendMessage(String message,Integer toId) {
         try {
+            //将json字符串类型的数据反序列化为Message类型的对象，再提取其中的content
+            String content = JSONObject.parseObject(message).getString("content");
+            if(content == null ){
+                log.info("消息不能为空");
+                throw new IOException("消息不能为空");
+            }
             //遍历sessionPol集合，如果对方在线，那么直接发送
-            // 如果对方不在线，消息存储到rabbitMQ消息队列中
+            // 如果对方不在线，消息存储到redis消息队列中
             Session session = sessionPool.get(toId);
             //如果对方在线，直接通过websocket发送消息
             if(session != null && session.isOpen()){
                 log.info("【websocket消息】 发送消息给："+toId+" ，内容为："+message);
                 session.getBasicRemote().sendText(message);
             }
-            //如果对方不在线，存储到rabbitMQ消息队列中
+            //如果对方不在线，存储到redis中的Stream消息队列中
             else{
-                log.info("【websocket】发送消息，对方不在线");
-                /*
-                 * 假设现在已经集成了rabbitmq的代码，这里就先不写了
-                 */
+                //实例化Bean
+                stringRedisTemplate = applicationContext.getBean(StringRedisTemplate.class);
+                //将message的数据进行序列化为json字符串
+                String jsonMessage = JSONObject.toJSONString(message);
+                // 使用XADD命令将消息存入Stream，并且以toId作为Stream的关键字
+                stringRedisTemplate.opsForStream().add(toId.toString(), Collections.singletonMap("message", jsonMessage));
+                log.info("【websocket】发送消息，对方不在线，待对方上线后送达消息");
             }
         } catch (Exception e) {
             log.error("Error 【sendMessage】:", e);
