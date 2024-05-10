@@ -39,8 +39,8 @@ dromara:
     aliyun-oss:
       - platform: aliyun-oss-1 # 存储平台标识
         enable-storage: true  # 启用存储
-        access-key: LTAI5tRwY7GLMNT6LBsPuwQ6
-        secret-key: sXJh3tVAAKSs1s16YRj2OSCqozVfWM
+        access-key: 
+        secret-key: 
         bucket-name: big-demo
         domain: https://big-demo.oss-cn-beijing.aliyuncs.com/ # 访问域名，注意“/”结尾，例如：https://abc.oss-cn-shanghai.aliyuncs.com/
         base-path: test/ # 基础路径
